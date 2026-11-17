@@ -173,6 +173,55 @@ def format_versions(versions: list[str]) -> str:
     return ", ".join(versions) if versions else "—"
 
 
+# Lower number = higher urgency (Jira default names at Red Hat).
+PRIORITY_RANK: dict[str, int] = {
+    "Blocker": 0,
+    "Critical": 1,
+    "Major": 2,
+    "High": 3,
+    "Normal": 4,
+    "Minor": 5,
+    "Low": 6,
+    "Trivial": 7,
+    "Undefined": 8,
+}
+
+
+def priority_rank(priority_name: str | None) -> int:
+    if not priority_name or priority_name == "—":
+        return 9
+    return PRIORITY_RANK.get(priority_name, 8)
+
+
+def best_priority_for_keys(keys: list[str], jira: dict[str, dict[str, Any]]) -> int:
+    ranks = [
+        priority_rank(jira.get(key, {}).get("priority"))
+        for key in keys
+        if jira.get(key, {}).get("found")
+    ]
+    return min(ranks) if ranks else 9
+
+
+def format_priority_column(keys: list[str], jira: dict[str, dict[str, Any]]) -> str:
+    values: list[str] = []
+    for key in keys:
+        issue = jira.get(key, {})
+        if not issue.get("found"):
+            continue
+        values.append(issue.get("priority") or "—")
+    return "; ".join(values) if values else "—"
+
+
+def format_affects_column(keys: list[str], jira: dict[str, dict[str, Any]]) -> str:
+    values: list[str] = []
+    for key in keys:
+        issue = jira.get(key, {})
+        if not issue.get("found"):
+            continue
+        values.append(format_versions(issue.get("affects_versions") or []))
+    return "; ".join(values) if values else "—"
+
+
 def format_jira_key_links(
     keys: list[str], jira: dict[str, dict[str, Any]], jira_url: str
 ) -> str:
@@ -186,12 +235,13 @@ def format_jira_key_links(
     return ", ".join(links)
 
 
-def issue_row_note(key: str, issue: dict[str, Any], jira_url: str) -> str:
+def issue_row_note(key: str, issue: dict[str, Any], jira_url: str, *, multi: bool) -> str:
     if issue.get("found"):
         summary = (issue.get("summary") or "").replace("|", "\\|")
         if len(summary) > 72:
             summary = f"{summary[:69]}..."
-        return f"**{key}:** Status {issue.get('status', '—')} — {summary}"
+        prefix = f"**{key}:** " if multi else ""
+        return f"{prefix}Status {issue.get('status', '—')} — {summary}"
     if not issue.get("browse_url"):
         issue = {
             **issue,
@@ -207,22 +257,13 @@ def primary_jira_row(
         return "—", "—", "—", "No Jira key in PR title/body"
 
     key_col = format_jira_key_links(keys, jira, jira_url)
-    priorities: list[str] = []
-    version_groups: list[str] = []
-    note_parts: list[str] = []
-
-    for key in keys:
-        issue = jira.get(key, {"found": False, "key": key})
-        note_parts.append(issue_row_note(key, issue, jira_url))
-        if not issue.get("found"):
-            continue
-        priority = issue.get("priority") or "—"
-        versions = format_versions(issue.get("affects_versions") or [])
-        priorities.append(f"{key}: {priority}")
-        version_groups.append(f"{key}: {versions}")
-
-    priority_col = "; ".join(priorities) if priorities else "—"
-    version_col = "; ".join(version_groups) if version_groups else "—"
+    multi = len(keys) > 1
+    note_parts = [
+        issue_row_note(key, jira.get(key, {"found": False, "key": key}), jira_url, multi=multi)
+        for key in keys
+    ]
+    priority_col = format_priority_column(keys, jira)
+    version_col = format_affects_column(keys, jira)
     notes_col = " · ".join(note_parts)
     return key_col, priority_col, version_col, notes_col
 
@@ -246,7 +287,9 @@ def render_report(
         f"| **PRs with Jira key(s)** | {linked}/{len(prs)} |",
         f"| **Jira keys resolved via API** | {resolved_keys}/{len(jira)} unique keys |",
         "",
-        "Jira keys are parsed from each PR **title and body** (`PROJ-123` pattern). When multiple keys appear on one PR, Priority and Affects version are shown per key.",
+        "Jira keys are parsed from each PR **title and body** (`PROJ-123` pattern). "
+        "Rows are sorted by **highest Jira Priority** on the linked issue(s), then PR number (newest first). "
+        "PRs with multiple keys use `;` in Priority / Affects version (same order as Jira key column).",
         "",
         "**API vs browser:** Jira Cloud returns **HTTP 404** when an issue is missing *or* when the API token lacks **Browse** permission. A `AAP-*` key that opens in the browser may still show as 404 in this report until the token can browse the **AAP** defect project (not only **AAPRFE**).",
         "",
@@ -258,9 +301,12 @@ def render_report(
         "| ---: | --- | --- | --- | --- |",
     ]
 
-    for pr in sorted(prs, key=lambda item: item["number"], reverse=True):
+    def sort_pr_for_jira(item: dict[str, Any]) -> tuple[int, int]:
+        rank = best_priority_for_keys(item["jira_keys"], jira)
+        return (rank, -item["number"])
+
+    for pr in sorted(prs, key=sort_pr_for_jira):
         keys, priority, versions, notes = primary_jira_row(pr["jira_keys"], jira, jira_url)
-        title = pr["title"].replace("|", "\\|")
         lines.append(
             f"| [#{pr['number']}](https://github.com/ansible/ansible-ui/pull/{pr['number']}) "
             f"| {keys} | {priority} | {versions} | {notes} |"
@@ -276,7 +322,12 @@ def render_report(
         ]
     )
 
-    for key in sorted(jira.keys()):
+    def sort_issue_key(key: str) -> tuple[int, str]:
+        issue = jira[key]
+        rank = priority_rank(issue.get("priority") if issue.get("found") else None)
+        return (rank, key)
+
+    for key in sorted(jira.keys(), key=sort_issue_key):
         issue = jira[key]
         if issue.get("found"):
             lines.append(
