@@ -217,22 +217,22 @@ Deliver framework behavior with dedicated framework review per repository policy
 
 | PR | Title | Author | Jira key(s) | Priority | Affects version(s) | Waiting on author | Conflicts | Link |
 | ---: | --- | --- | --- | --- | --- | :---: | :---: | --- |
-| 3911 | fix(awx): show host checkboxes for constructed inventories (AAP-93628) | swatinarvekar |[AAP-93628](https://redhat.atlassian.net/browse/AAP-93628)| — | — | | | [PR](https://github.com/ansible/ansible-ui/pull/3911) |
-| 3908 | fix(platform): enable custom logo file upload (AAP-65130) | swatinarvekar |[AAP-65130](https://redhat.atlassian.net/browse/AAP-65130)| — | — | | | [PR](https://github.com/ansible/ansible-ui/pull/3908) |
-| 3902 | AAP-93673: show error toast when duplicate template fails | pshekhaw |[AAP-93673](https://redhat.atlassian.net/browse/AAP-93673)| — | — | | | [PR](https://github.com/ansible/ansible-ui/pull/3902) |
+| 3911 | fix(awx): show host checkboxes for constructed inventories (AAP-93628) | swatinarvekar  | [AAP-93628](https://redhat.atlassian.net/browse/AAP-93628)| — | — | | | [PR](https://github.com/ansible/ansible-ui/pull/3911) |
+| 3908 | fix(platform): enable custom logo file upload (AAP-65130) | swatinarvekar  | [AAP-65130](https://redhat.atlassian.net/browse/AAP-65130)| — | — | | | [PR](https://github.com/ansible/ansible-ui/pull/3908) |
+| 3902 | AAP-93673: show error toast when duplicate template fails | pshekhaw  | [AAP-93673](https://redhat.atlassian.net/browse/AAP-93673)| — | — | | | [PR](https://github.com/ansible/ansible-ui/pull/3902) |
 | 3881 | test(e2e): restore overview hosts Ready/Failed redirect coverage | lgalis | — | — | — | | | [PR](https://github.com/ansible/ansible-ui/pull/3881) |
-| 3874 | fix: use exact name filter for Hub task management (AAP-99022) | swatinarvekar |[AAP-99022](https://redhat.atlassian.net/browse/AAP-99022)| — | — | | | [PR](https://github.com/ansible/ansible-ui/pull/3874) |
-| 3865 | AAP-101258: feat: support boolean survey answers in UI | chadmf |[AAP-101258](https://redhat.atlassian.net/browse/AAP-101258)| — | — | Yes | Yes | [PR](https://github.com/ansible/ansible-ui/pull/3865) |
-| 3848 | AAP-99868: grow survey textarea for multi-line defaults | shrsingh-eng |[AAP-99868](https://redhat.atlassian.net/browse/AAP-99868)| — | — | Yes | | [PR](https://github.com/ansible/ansible-ui/pull/3848) |
-| 3843 | fix(hub): keep the selected collection when browsing versions (AAP-100265) | snehald1241 |[AAP-100265](https://redhat.atlassian.net/browse/AAP-100265)| — | — | Yes | | [PR](https://github.com/ansible/ansible-ui/pull/3843) |
-| 3840 | AAPRFE-3174: Add dynamic/live search filtering to Organizations page | pshekhaw |[AAPRFE-3174](https://redhat.atlassian.net/browse/AAPRFE-3174)| Normal | 2.6, 2.7 | | | [PR](https://github.com/ansible/ansible-ui/pull/3840) |
-| 3827 | AAP-85721: Warn before deleting job templates in use by workflows | swatinarvekar |[AAP-85721](https://redhat.atlassian.net/browse/AAP-85721), [AAP-99473](https://redhat.atlassian.net/browse/AAP-99473)| — | — | | | [PR](https://github.com/ansible/ansible-ui/pull/3827) |
+| 3874 | fix: use exact name filter for Hub task management (AAP-99022) | swatinarvekar  | [AAP-99022](https://redhat.atlassian.net/browse/AAP-99022)| — | — | | | [PR](https://github.com/ansible/ansible-ui/pull/3874) |
+| 3865 | AAP-101258: feat: support boolean survey answers in UI | chadmf  | [AAP-101258](https://redhat.atlassian.net/browse/AAP-101258)| — | — | Yes | Yes | [PR](https://github.com/ansible/ansible-ui/pull/3865) |
+| 3848 | AAP-99868: grow survey textarea for multi-line defaults | shrsingh-eng  | [AAP-99868](https://redhat.atlassian.net/browse/AAP-99868)| — | — | Yes | | [PR](https://github.com/ansible/ansible-ui/pull/3848) |
+| 3843 | fix(hub): keep the selected collection when browsing versions (AAP-100265) | snehald1241  | [AAP-100265](https://redhat.atlassian.net/browse/AAP-100265)| — | — | Yes | | [PR](https://github.com/ansible/ansible-ui/pull/3843) |
+| 3840 | AAPRFE-3174: Add dynamic/live search filtering to Organizations page | pshekhaw  | [AAPRFE-3174](https://redhat.atlassian.net/browse/AAPRFE-3174)| Normal | 2.6, 2.7 | | | [PR](https://github.com/ansible/ansible-ui/pull/3840) |
+| 3827 | AAP-85721: Warn before deleting job templates in use by workflows | swatinarvekar  | [AAP-85721](https://redhat.atlassian.net/browse/AAP-85721), [AAP-99473](https://redhat.atlassian.net/browse/AAP-99473)| — | — | | | [PR](https://github.com/ansible/ansible-ui/pull/3827) |
 | 3770 | fix(awx): allow clearing schedule limit | demonpig | — | — | — | Yes | | [PR](https://github.com/ansible/ansible-ui/pull/3770) |
 | 3767 | chore(deps): fix npm audit findings | sasas-cloud | — | — | — | Yes | Yes | [PR](https://github.com/ansible/ansible-ui/pull/3767) |
-| 3761 | Fix copy-to-clipboard format selection (AAP-66504) | abhishek-paygavhan |[AAP-66504](https://redhat.atlassian.net/browse/AAP-66504)| — | — | Yes | Yes | [PR](https://github.com/ansible/ansible-ui/pull/3761) |
+| 3761 | Fix copy-to-clipboard format selection (AAP-66504) | abhishek-paygavhan  | [AAP-66504](https://redhat.atlassian.net/browse/AAP-66504)| — | — | Yes | Yes | [PR](https://github.com/ansible/ansible-ui/pull/3761) |
 | 3752 | Update EDA rulebook activation help text for project sync restart | lennysh | — | — | — | Yes | | [PR](https://github.com/ansible/ansible-ui/pull/3752) |
-| 3740 | Add UI for galaxy_update_on_launch project setting | jonnyfiveiq |[AAPRFE-409](https://redhat.atlassian.net/browse/AAPRFE-409)| Undefined | 2.3, 2.6, 2.7 | Yes | | [PR](https://github.com/ansible/ansible-ui/pull/3740) |
-| 3706 | fix: persist cleared workflow node job/skip tags (AAP-65215) | swatinarvekar |[AAP-65215](https://redhat.atlassian.net/browse/AAP-65215)| — | — | Yes | | [PR](https://github.com/ansible/ansible-ui/pull/3706) |
+| 3740 | Add UI for galaxy_update_on_launch project setting | jonnyfiveiq  | [AAPRFE-409](https://redhat.atlassian.net/browse/AAPRFE-409)| Undefined | 2.3, 2.6, 2.7 | Yes | | [PR](https://github.com/ansible/ansible-ui/pull/3740) |
+| 3706 | fix: persist cleared workflow node job/skip tags (AAP-65215) | swatinarvekar  | [AAP-65215](https://redhat.atlassian.net/browse/AAP-65215)| — | — | Yes | | [PR](https://github.com/ansible/ansible-ui/pull/3706) |
 | 3702 | docs: add translation contribution guide | demonpig | — | — | — | Yes | | [PR](https://github.com/ansible/ansible-ui/pull/3702) |
 | 3687 | fix: preserve WJT extra_vars numeric precision (AAP-95292) | swatinarvekar |[AAP-95292](https://redhat.atlassian.net/browse/AAP-95292)| — | — | Yes | | [PR](https://github.com/ansible/ansible-ui/pull/3687) |
 | 3686 | fix: project status link missing and inventory source last job status link malformed | siddhipatil01 | — | — | — | Yes | | [PR](https://github.com/ansible/ansible-ui/pull/3686) |

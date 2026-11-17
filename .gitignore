@@ -43,3 +43,4 @@ AGENTS.local.md
 # Ignore generated migration spec files (keep the template)
 migration-specs/**/*.yaml
 !migration-specs/templates/*.yaml
+reports/__pycache__/
