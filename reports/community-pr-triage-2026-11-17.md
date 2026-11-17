@@ -8,7 +8,7 @@
 | **GitHub data** | Authenticated API (`GH_ANSIBLE_UI_TOKEN`) |
 | **Jira data** | `JIRA_URL` — **Priority** and **Affects version** (`versions`) per key in PR title/body |
 | **PRs with Jira key(s)** | 14/21 |
-| **Jira keys resolved** | 2/14 unique keys ([AAPRFE-3174](https://redhat.atlassian.net/browse/AAPRFE-3174), [AAPRFE-409](https://redhat.atlassian.net/browse/AAPRFE-409)) |
+| **Jira keys resolved via API** | 2/14 unique keys ([AAPRFE-3174](https://redhat.atlassian.net/browse/AAPRFE-3174), [AAPRFE-409](https://redhat.atlassian.net/browse/AAPRFE-409)) |
 
 Community volume is concentrated: **swatinarvekar (6)**, **demonpig (3)**, **pshekhaw (2)**; the rest are one PR each. Many carry **`pr reviewed using repo skills`**. **`waiting-on-author`** appears on 14/21 — most of the queue is feedback-pending, not unreviewed.
 
@@ -26,7 +26,7 @@ Community volume is concentrated: **swatinarvekar (6)**, **demonpig (3)**, **psh
 
 **Dirty merge (at snapshot):** [#3552](https://github.com/ansible/ansible-ui/pull/3552), [#3865](https://github.com/ansible/ansible-ui/pull/3865), [#3767](https://github.com/ansible/ansible-ui/pull/3767), [#3761](https://github.com/ansible/ansible-ui/pull/3761)
 
-**Jira note:** Keys matching `AAP-*` returned **404** from `redhat.atlassian.net` with the credentials used for this snapshot (not visible to the generating user). Treat Priority / Affects version for those PRs as **unknown until verified** in the internal defect tracker or with expanded Jira access. RFE keys (`AAPRFE-*`) resolve as expected.
+**Jira note (API vs browser):** Jira Cloud returns **HTTP 404** for *missing issues* and for issues the **API token cannot browse**. The snapshot token can read **AAPRFE** but not the **AAP** defect project, so keys like [AAP-93628](https://redhat.atlassian.net/browse/AAP-93628) may open in your browser yet show **No API access (404)** here. Re-run after the token user has **Browse** on **AAP** (or use the same Atlassian account as your browser session).
 
 ---
 
@@ -36,24 +36,24 @@ Keys are extracted from each PR **title and description**. When a PR lists multi
 
 | PR | Jira key(s) | Priority | Affects version(s) | Notes |
 | ---: | --- | --- | --- | --- |
-| [#3911](https://github.com/ansible/ansible-ui/pull/3911) | AAP-93628 | — | — | Not found in Jira (404) |
-| [#3908](https://github.com/ansible/ansible-ui/pull/3908) | AAP-65130 | — | — | Not found in Jira (404) |
-| [#3902](https://github.com/ansible/ansible-ui/pull/3902) | AAP-93673 | — | — | Not found in Jira (404) |
+| [#3911](https://github.com/ansible/ansible-ui/pull/3911) | AAP-93628 | — | — | No API access (Jira 404; may open in browser) |
+| [#3908](https://github.com/ansible/ansible-ui/pull/3908) | AAP-65130 | — | — | No API access (Jira 404; may open in browser) |
+| [#3902](https://github.com/ansible/ansible-ui/pull/3902) | AAP-93673 | — | — | No API access (Jira 404; may open in browser) |
 | [#3881](https://github.com/ansible/ansible-ui/pull/3881) | — | — | — | No Jira key in PR |
-| [#3874](https://github.com/ansible/ansible-ui/pull/3874) | AAP-99022 | — | — | Not found in Jira (404) |
-| [#3865](https://github.com/ansible/ansible-ui/pull/3865) | AAP-101258 | — | — | Not found in Jira (404) |
-| [#3848](https://github.com/ansible/ansible-ui/pull/3848) | AAP-99868 | — | — | Not found in Jira (404) |
-| [#3843](https://github.com/ansible/ansible-ui/pull/3843) | AAP-100265 | — | — | Not found in Jira (404) |
+| [#3874](https://github.com/ansible/ansible-ui/pull/3874) | AAP-99022 | — | — | No API access (Jira 404; may open in browser) |
+| [#3865](https://github.com/ansible/ansible-ui/pull/3865) | AAP-101258 | — | — | No API access (Jira 404; may open in browser) |
+| [#3848](https://github.com/ansible/ansible-ui/pull/3848) | AAP-99868 | — | — | No API access (Jira 404; may open in browser) |
+| [#3843](https://github.com/ansible/ansible-ui/pull/3843) | AAP-100265 | — | — | No API access (Jira 404; may open in browser) |
 | [#3840](https://github.com/ansible/ansible-ui/pull/3840) | AAPRFE-3174 | Normal | 2.6, 2.7 | Status: New |
-| [#3827](https://github.com/ansible/ansible-ui/pull/3827) | AAP-85721, AAP-99473 | — | — | Not found in Jira (404) |
+| [#3827](https://github.com/ansible/ansible-ui/pull/3827) | AAP-85721, AAP-99473 | — | — | No API access (Jira 404; may open in browser) |
 | [#3770](https://github.com/ansible/ansible-ui/pull/3770) | — | — | — | No Jira key in PR |
 | [#3767](https://github.com/ansible/ansible-ui/pull/3767) | — | — | — | No Jira key in PR |
-| [#3761](https://github.com/ansible/ansible-ui/pull/3761) | AAP-66504 | — | — | Not found in Jira (404) |
+| [#3761](https://github.com/ansible/ansible-ui/pull/3761) | AAP-66504 | — | — | No API access (Jira 404; may open in browser) |
 | [#3752](https://github.com/ansible/ansible-ui/pull/3752) | — | — | — | No Jira key in PR |
 | [#3740](https://github.com/ansible/ansible-ui/pull/3740) | AAPRFE-409 | Undefined | 2.3, 2.6, 2.7 | Status: Backlog |
-| [#3706](https://github.com/ansible/ansible-ui/pull/3706) | AAP-65215 | — | — | Not found in Jira (404) |
+| [#3706](https://github.com/ansible/ansible-ui/pull/3706) | AAP-65215 | — | — | No API access (Jira 404; may open in browser) |
 | [#3702](https://github.com/ansible/ansible-ui/pull/3702) | — | — | — | No Jira key in PR |
-| [#3687](https://github.com/ansible/ansible-ui/pull/3687) | AAP-95292 | — | — | Not found in Jira (404) |
+| [#3687](https://github.com/ansible/ansible-ui/pull/3687) | AAP-95292 | — | — | No API access (Jira 404; may open in browser) |
 | [#3686](https://github.com/ansible/ansible-ui/pull/3686) | — | — | — | No Jira key in PR |
 | [#3680](https://github.com/ansible/ansible-ui/pull/3680) | — | — | — | No Jira key in PR |
 | [#3552](https://github.com/ansible/ansible-ui/pull/3552) | — | — | — | No Jira key in PR |
@@ -64,18 +64,18 @@ Keys are extracted from each PR **title and description**. When a PR lists multi
 | --- | --- | --- | --- | --- |
 | [AAPRFE-3174](https://redhat.atlassian.net/browse/AAPRFE-3174) | Normal | 2.6, 2.7 | New | Add dynamic/live search filtering to the Organizations page |
 | [AAPRFE-409](https://redhat.atlassian.net/browse/AAPRFE-409) | Undefined | 2.3, 2.6, 2.7 | Backlog | Allow users to clear the galaxy cache |
-| AAP-100265 | — | — | Not found (404) | — |
-| AAP-101258 | — | — | Not found (404) | — |
-| AAP-65130 | — | — | Not found (404) | — |
-| AAP-65215 | — | — | Not found (404) | — |
-| AAP-66504 | — | — | Not found (404) | — |
-| AAP-85721 | — | — | Not found (404) | — |
-| AAP-93628 | — | — | Not found (404) | — |
-| AAP-93673 | — | — | Not found (404) | — |
-| AAP-95292 | — | — | Not found (404) | — |
-| AAP-99022 | — | — | Not found (404) | — |
-| AAP-99473 | — | — | Not found (404) | — |
-| AAP-99868 | — | — | Not found (404) | — |
+| [AAP-100265](https://redhat.atlassian.net/browse/AAP-100265) | — | — | No API access (404) | Token lacks Browse on AAP project |
+| [AAP-101258](https://redhat.atlassian.net/browse/AAP-101258) | — | — | No API access (404) | Token lacks Browse on AAP project |
+| [AAP-65130](https://redhat.atlassian.net/browse/AAP-65130) | — | — | No API access (404) | Token lacks Browse on AAP project |
+| [AAP-65215](https://redhat.atlassian.net/browse/AAP-65215) | — | — | No API access (404) | Token lacks Browse on AAP project |
+| [AAP-66504](https://redhat.atlassian.net/browse/AAP-66504) | — | — | No API access (404) | Token lacks Browse on AAP project |
+| [AAP-85721](https://redhat.atlassian.net/browse/AAP-85721) | — | — | No API access (404) | Token lacks Browse on AAP project |
+| [AAP-93628](https://redhat.atlassian.net/browse/AAP-93628) | — | — | No API access (404) | Token lacks Browse on AAP project |
+| [AAP-93673](https://redhat.atlassian.net/browse/AAP-93673) | — | — | No API access (404) | Token lacks Browse on AAP project |
+| [AAP-95292](https://redhat.atlassian.net/browse/AAP-95292) | — | — | No API access (404) | Token lacks Browse on AAP project |
+| [AAP-99022](https://redhat.atlassian.net/browse/AAP-99022) | — | — | No API access (404) | Token lacks Browse on AAP project |
+| [AAP-99473](https://redhat.atlassian.net/browse/AAP-99473) | — | — | No API access (404) | Token lacks Browse on AAP project |
+| [AAP-99868](https://redhat.atlassian.net/browse/AAP-99868) | — | — | No API access (404) | Token lacks Browse on AAP project |
 
 ---
 

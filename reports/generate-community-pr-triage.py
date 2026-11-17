@@ -74,12 +74,20 @@ def extract_jira_keys(title: str, body: str | None) -> list[str]:
 def fetch_jira_issue(
     jira_url: str, headers: dict[str, str], issue_key: str
 ) -> dict[str, Any]:
+    browse_url = f"{jira_url.rstrip('/')}/browse/{issue_key}"
     url = f"{jira_url.rstrip('/')}/rest/api/3/issue/{issue_key}?fields=summary,priority,versions,status"
     request = urllib.request.Request(url, headers=headers)
     try:
         data = http_json(request)
     except urllib.error.HTTPError as error:
-        return {"key": issue_key, "found": False, "error": error.code}
+        # Jira Cloud uses 404 for both missing issues and missing Browse permission.
+        return {
+            "key": issue_key,
+            "found": False,
+            "error": error.code,
+            "access_denied_likely": error.code == 404,
+            "browse_url": browse_url,
+        }
 
     fields = data.get("fields", {})
     versions = [version.get("name", "") for version in fields.get("versions") or []]
@@ -92,8 +100,20 @@ def fetch_jira_issue(
         "priority": priority,
         "affects_versions": [version for version in versions if version],
         "status": status,
-        "browse_url": f"{jira_url.rstrip('/')}/browse/{issue_key}",
+        "browse_url": browse_url,
     }
+
+
+def unresolved_jira_label(issue: dict[str, Any]) -> str:
+    if issue.get("error") == 404:
+        return "No API access (404)"
+    return f"Unresolved (HTTP {issue.get('error', '?')})"
+
+
+def unresolved_jira_note(issue: dict[str, Any]) -> str:
+    if issue.get("error") == 404:
+        return "Jira API 404 — issue may exist in browser; token needs Browse on that project"
+    return f"Jira API HTTP {issue.get('error', '?')}"
 
 
 def format_versions(versions: list[str]) -> str:
@@ -122,11 +142,17 @@ def primary_jira_row(keys: list[str], jira: dict[str, dict[str, Any]]) -> tuple[
 
     key_col = ", ".join(keys)
     if missing and not priorities:
-        return key_col, "—", "—", f"Not found in Jira ({', '.join(missing)})"
+        return key_col, "—", "—", "; ".join(
+            unresolved_jira_note(jira.get(key, {"error": "?"})) for key in missing
+        )
 
     note_parts: list[str] = []
     if missing:
-        note_parts.append(f"Not found: {', '.join(missing)}")
+        note_parts.append(
+            "; ".join(
+                f"{key}: {unresolved_jira_note(jira.get(key, {'error': '?'}))}" for key in missing
+            )
+        )
     if priorities:
         note_parts.append("; ".join(statuses))
     return key_col, "; ".join(priorities) if priorities else "—", "; ".join(version_groups) if version_groups else "—", " | ".join(note_parts)
@@ -134,7 +160,7 @@ def primary_jira_row(keys: list[str], jira: dict[str, dict[str, Any]]) -> tuple[
 
 def render_report(snapshot: str, prs: list[dict[str, Any]], jira: dict[str, dict[str, Any]]) -> str:
     linked = sum(1 for pr in prs if pr["jira_keys"])
-    resolved = sum(1 for pr in prs if any(jira.get(k, {}).get("found") for k in pr["jira_keys"]))
+    resolved_keys = sum(1 for issue in jira.values() if issue.get("found"))
 
     lines: list[str] = [
         "# Community PR triage report — ansible-ui",
@@ -147,9 +173,11 @@ def render_report(snapshot: str, prs: list[dict[str, Any]], jira: dict[str, dict
         "| **GitHub data** | `GH_ANSIBLE_UI_TOKEN` |",
         "| **Jira data** | `JIRA_URL` — fields: **Priority**, **Affects version** (`versions`) |",
         f"| **PRs with Jira key(s)** | {linked}/{len(prs)} |",
-        f"| **Jira keys resolved** | {resolved} issue lookup(s) across PRs |",
+        f"| **Jira keys resolved via API** | {resolved_keys}/{len(jira)} unique keys |",
         "",
         "Jira keys are parsed from each PR **title and body** (`PROJ-123` pattern). When multiple keys appear on one PR, Priority and Affects version are shown per key.",
+        "",
+        "**API vs browser:** Jira Cloud returns **HTTP 404** when an issue is missing *or* when the API token lacks **Browse** permission. A `AAP-*` key that opens in the browser may still show as 404 in this report until the token can browse the **AAP** defect project (not only **AAPRFE**).",
         "",
         "---",
         "",
@@ -186,7 +214,10 @@ def render_report(snapshot: str, prs: list[dict[str, Any]], jira: dict[str, dict
                 f"| {issue.get('summary', '').replace('|', '\\|')} |"
             )
         else:
-            lines.append(f"| {key} | — | — | Not found ({issue.get('error', '?')}) | — |")
+            lines.append(
+                f"| [{key}]({issue.get('browse_url', '')}) | — | — | {unresolved_jira_label(issue)} "
+                f"| {unresolved_jira_note(issue).replace('|', '\\|')} |"
+            )
 
     lines.extend(
         [
@@ -222,9 +253,9 @@ def render_report(snapshot: str, prs: list[dict[str, Any]], jira: dict[str, dict
             f"  --output reports/community-pr-triage-{snapshot}.md",
             "```",
             "",
-            "**Note:** If `AAP-*` keys return Jira 404, those issues may be outside your Jira project scope",
-            "or not migrated to `redhat.atlassian.net`. `AAPRFE-*` keys typically resolve for contributors",
-            "with AAP RFE project access.",
+            "**Note:** If `AAP-*` keys return Jira **404**, the issue often still exists at",
+            "`https://redhat.atlassian.net/browse/<KEY>` in your browser — grant the API token user",
+            "**Browse** on the **AAP** defect project, or regenerate with a personal token tied to that account.",
             "",
         ]
     )
