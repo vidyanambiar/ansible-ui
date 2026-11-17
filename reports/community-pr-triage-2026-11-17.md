@@ -5,7 +5,10 @@
 | **Snapshot date** | 2026-11-17 |
 | **Filter** | [Open PRs with `community` label](https://github.com/ansible/ansible-ui/pulls?q=is%3Apr+state%3Aopen+label%3Acommunity) |
 | **Total open** | 21 |
-| **Data source** | GitHub REST API (public); re-check merge state and CI before acting |
+| **GitHub data** | Authenticated API (`GH_ANSIBLE_UI_TOKEN`) |
+| **Jira data** | `JIRA_URL` — **Priority** and **Affects version** (`versions`) per key in PR title/body |
+| **PRs with Jira key(s)** | 14/21 |
+| **Jira keys resolved** | 2/14 unique keys ([AAPRFE-3174](https://redhat.atlassian.net/browse/AAPRFE-3174), [AAPRFE-409](https://redhat.atlassian.net/browse/AAPRFE-409)) |
 
 Community volume is concentrated: **swatinarvekar (6)**, **demonpig (3)**, **pshekhaw (2)**; the rest are one PR each. Many carry **`pr reviewed using repo skills`**. **`waiting-on-author`** appears on 14/21 — most of the queue is feedback-pending, not unreviewed.
 
@@ -23,21 +26,72 @@ Community volume is concentrated: **swatinarvekar (6)**, **demonpig (3)**, **psh
 
 **Dirty merge (at snapshot):** [#3552](https://github.com/ansible/ansible-ui/pull/3552), [#3865](https://github.com/ansible/ansible-ui/pull/3865), [#3767](https://github.com/ansible/ansible-ui/pull/3767), [#3761](https://github.com/ansible/ansible-ui/pull/3761)
 
+**Jira note:** Keys matching `AAP-*` returned **404** from `redhat.atlassian.net` with the credentials used for this snapshot (not visible to the generating user). Treat Priority / Affects version for those PRs as **unknown until verified** in the internal defect tracker or with expanded Jira access. RFE keys (`AAPRFE-*`) resolve as expected.
+
+---
+
+## Jira linkage (Priority & Affects version)
+
+Keys are extracted from each PR **title and description**. When a PR lists multiple keys, Priority and Affects version are shown per key.
+
+| PR | Jira key(s) | Priority | Affects version(s) | Notes |
+| ---: | --- | --- | --- | --- |
+| [#3911](https://github.com/ansible/ansible-ui/pull/3911) | AAP-93628 | — | — | Not found in Jira (404) |
+| [#3908](https://github.com/ansible/ansible-ui/pull/3908) | AAP-65130 | — | — | Not found in Jira (404) |
+| [#3902](https://github.com/ansible/ansible-ui/pull/3902) | AAP-93673 | — | — | Not found in Jira (404) |
+| [#3881](https://github.com/ansible/ansible-ui/pull/3881) | — | — | — | No Jira key in PR |
+| [#3874](https://github.com/ansible/ansible-ui/pull/3874) | AAP-99022 | — | — | Not found in Jira (404) |
+| [#3865](https://github.com/ansible/ansible-ui/pull/3865) | AAP-101258 | — | — | Not found in Jira (404) |
+| [#3848](https://github.com/ansible/ansible-ui/pull/3848) | AAP-99868 | — | — | Not found in Jira (404) |
+| [#3843](https://github.com/ansible/ansible-ui/pull/3843) | AAP-100265 | — | — | Not found in Jira (404) |
+| [#3840](https://github.com/ansible/ansible-ui/pull/3840) | AAPRFE-3174 | Normal | 2.6, 2.7 | Status: New |
+| [#3827](https://github.com/ansible/ansible-ui/pull/3827) | AAP-85721, AAP-99473 | — | — | Not found in Jira (404) |
+| [#3770](https://github.com/ansible/ansible-ui/pull/3770) | — | — | — | No Jira key in PR |
+| [#3767](https://github.com/ansible/ansible-ui/pull/3767) | — | — | — | No Jira key in PR |
+| [#3761](https://github.com/ansible/ansible-ui/pull/3761) | AAP-66504 | — | — | Not found in Jira (404) |
+| [#3752](https://github.com/ansible/ansible-ui/pull/3752) | — | — | — | No Jira key in PR |
+| [#3740](https://github.com/ansible/ansible-ui/pull/3740) | AAPRFE-409 | Undefined | 2.3, 2.6, 2.7 | Status: Backlog |
+| [#3706](https://github.com/ansible/ansible-ui/pull/3706) | AAP-65215 | — | — | Not found in Jira (404) |
+| [#3702](https://github.com/ansible/ansible-ui/pull/3702) | — | — | — | No Jira key in PR |
+| [#3687](https://github.com/ansible/ansible-ui/pull/3687) | AAP-95292 | — | — | Not found in Jira (404) |
+| [#3686](https://github.com/ansible/ansible-ui/pull/3686) | — | — | — | No Jira key in PR |
+| [#3680](https://github.com/ansible/ansible-ui/pull/3680) | — | — | — | No Jira key in PR |
+| [#3552](https://github.com/ansible/ansible-ui/pull/3552) | — | — | — | No Jira key in PR |
+
+### Jira issues referenced (deduplicated)
+
+| Key | Priority | Affects version(s) | Status | Summary |
+| --- | --- | --- | --- | --- |
+| [AAPRFE-3174](https://redhat.atlassian.net/browse/AAPRFE-3174) | Normal | 2.6, 2.7 | New | Add dynamic/live search filtering to the Organizations page |
+| [AAPRFE-409](https://redhat.atlassian.net/browse/AAPRFE-409) | Undefined | 2.3, 2.6, 2.7 | Backlog | Allow users to clear the galaxy cache |
+| AAP-100265 | — | — | Not found (404) | — |
+| AAP-101258 | — | — | Not found (404) | — |
+| AAP-65130 | — | — | Not found (404) | — |
+| AAP-65215 | — | — | Not found (404) | — |
+| AAP-66504 | — | — | Not found (404) | — |
+| AAP-85721 | — | — | Not found (404) | — |
+| AAP-93628 | — | — | Not found (404) | — |
+| AAP-93673 | — | — | Not found (404) | — |
+| AAP-95292 | — | — | Not found (404) | — |
+| AAP-99022 | — | — | Not found (404) | — |
+| AAP-99473 | — | — | Not found (404) | — |
+| AAP-99868 | — | — | Not found (404) | — |
+
 ---
 
 ## Fast path — assign reviewers (7 PRs)
 
 Small, scoped, mostly **`risk:low`** (or test-only), **not** `waiting-on-author`. Suitable for a single “community batch” review block.
 
-| PR | Title | Area | Size | Notes |
-| ---: | --- | --- | --- | --- |
-| [#3911](https://github.com/ansible/ansible-ui/pull/3911) | Constructed inventory host checkboxes (AAP-93628) | Controller | XS | Regression vs 2.4 |
-| [#3908](https://github.com/ansible/ansible-ui/pull/3908) | Platform custom logo upload (AAP-65130) | Platform | S | File upload + data URL |
-| [#3902](https://github.com/ansible/ansible-ui/pull/3902) | Error toast on duplicate template failure (AAP-93673) | Controller | M | **Missing risk analysis** label |
-| [#3881](https://github.com/ansible/ansible-ui/pull/3881) | Restore overview hosts Ready/Failed E2E | Playwright | XS | `e2e: running` |
-| [#3874](https://github.com/ansible/ansible-ui/pull/3874) | Hub task name exact filter (AAP-99022) | Hub | XS | API rejects `name__icontains` on 2.6 |
-| [#3840](https://github.com/ansible/ansible-ui/pull/3840) | Organizations live/async search (AAPRFE-3174) | Platform | M | Enhancement |
-| [#3827](https://github.com/ansible/ansible-ui/pull/3827) | Warn before deleting JT used by workflows (AAP-85721) | Controller | S | 2.4 behavior restore |
+| PR | Title | Area | Size | Jira | Priority | Affects version | Notes |
+| ---: | --- | --- | --- | --- | --- | --- | --- |
+| [#3911](https://github.com/ansible/ansible-ui/pull/3911) | Constructed inventory host checkboxes (AAP-93628) | Controller | XS | AAP-93628 | — | — | Regression vs 2.4 |
+| [#3908](https://github.com/ansible/ansible-ui/pull/3908) | Platform custom logo upload (AAP-65130) | Platform | S | AAP-65130 | — | — | File upload + data URL |
+| [#3902](https://github.com/ansible/ansible-ui/pull/3902) | Error toast on duplicate template failure (AAP-93673) | Controller | M | AAP-93673 | — | — | **Missing risk analysis** label |
+| [#3881](https://github.com/ansible/ansible-ui/pull/3881) | Restore overview hosts Ready/Failed E2E | Playwright | XS | — | — | — | `e2e: running` |
+| [#3874](https://github.com/ansible/ansible-ui/pull/3874) | Hub task name exact filter (AAP-99022) | Hub | XS | AAP-99022 | — | — | API rejects `name__icontains` on 2.6 |
+| [#3840](https://github.com/ansible/ansible-ui/pull/3840) | Organizations live/async search (AAPRFE-3174) | Platform | M | AAPRFE-3174 | Normal | 2.6, 2.7 | Enhancement |
+| [#3827](https://github.com/ansible/ansible-ui/pull/3827) | Warn before deleting JT used by workflows (AAP-85721) | Controller | S | AAP-85721 | — | — | 2.4 behavior restore |
 
 **Reviewer routing:** `controller` → AWX UI; `HUB` → Hub; `platform` → Gateway/Platform; Playwright-only → E2E maintainers.
 
@@ -161,37 +215,48 @@ Deliver framework behavior with dedicated framework review per repository policy
 
 ## Full inventory
 
-| PR | Title | Author | Area | Size | Waiting on author | Conflicts | Link |
-| ---: | --- | --- | --- | --- | :---: | :---: | --- |
-| 3911 | fix(awx): show host checkboxes for constructed inventories (AAP-93628) | swatinarvekar | controller | XS | | | [PR](https://github.com/ansible/ansible-ui/pull/3911) |
-| 3908 | fix(platform): enable custom logo file upload (AAP-65130) | swatinarvekar | platform | S | | | [PR](https://github.com/ansible/ansible-ui/pull/3908) |
-| 3902 | AAP-93673: show error toast when duplicate template fails | pshekhaw | controller | M | | | [PR](https://github.com/ansible/ansible-ui/pull/3902) |
-| 3881 | test(e2e): restore overview hosts Ready/Failed redirect coverage | lgalis | playwright | XS | | | [PR](https://github.com/ansible/ansible-ui/pull/3881) |
-| 3874 | fix: use exact name filter for Hub task management (AAP-99022) | swatinarvekar | HUB | XS | | | [PR](https://github.com/ansible/ansible-ui/pull/3874) |
-| 3865 | AAP-101258: feat: support boolean survey answers in UI | chadmf | controller | M | Yes | Yes | [PR](https://github.com/ansible/ansible-ui/pull/3865) |
-| 3848 | AAP-99868: grow survey textarea for multi-line defaults | shrsingh-eng | framework | M | Yes | | [PR](https://github.com/ansible/ansible-ui/pull/3848) |
-| 3843 | fix(hub): keep the selected collection when browsing versions (AAP-100265) | snehald1241 | HUB | S | Yes | | [PR](https://github.com/ansible/ansible-ui/pull/3843) |
-| 3840 | AAPRFE-3174: Add dynamic/live search filtering to Organizations page | pshekhaw | platform | M | | | [PR](https://github.com/ansible/ansible-ui/pull/3840) |
-| 3827 | AAP-85721: Warn before deleting job templates in use by workflows | swatinarvekar | controller | S | | | [PR](https://github.com/ansible/ansible-ui/pull/3827) |
-| 3770 | fix(awx): allow clearing schedule limit | demonpig | controller | XS | Yes | | [PR](https://github.com/ansible/ansible-ui/pull/3770) |
-| 3767 | chore(deps): fix npm audit findings | sasas-cloud | deps | M | Yes | Yes | [PR](https://github.com/ansible/ansible-ui/pull/3767) |
-| 3761 | Fix copy-to-clipboard format selection (AAP-66504) | abhishek-paygavhan | framework | XS | Yes | Yes | [PR](https://github.com/ansible/ansible-ui/pull/3761) |
-| 3752 | Update EDA rulebook activation help text for project sync restart | lennysh | EDA | M | Yes | | [PR](https://github.com/ansible/ansible-ui/pull/3752) |
-| 3740 | Add UI for galaxy_update_on_launch project setting | jonnyfiveiq | controller | S | Yes | | [PR](https://github.com/ansible/ansible-ui/pull/3740) |
-| 3706 | fix: persist cleared workflow node job/skip tags (AAP-65215) | swatinarvekar | controller/EDA/HUB | S | Yes | | [PR](https://github.com/ansible/ansible-ui/pull/3706) |
-| 3702 | docs: add translation contribution guide | demonpig | docs | M | Yes | | [PR](https://github.com/ansible/ansible-ui/pull/3702) |
-| 3687 | fix: preserve WJT extra_vars numeric precision (AAP-95292) | swatinarvekar | controller | XS | Yes | | [PR](https://github.com/ansible/ansible-ui/pull/3687) |
-| 3686 | fix: project status link missing and inventory source last job status link malformed | siddhipatil01 | controller | S | Yes | | [PR](https://github.com/ansible/ansible-ui/pull/3686) |
-| 3680 | feat(framework): add language preference setting | demonpig | framework | M | Yes | | [PR](https://github.com/ansible/ansible-ui/pull/3680) |
-| 3552 | Feature/conditional survey | kenancakir | controller | L | Yes | Yes | [PR](https://github.com/ansible/ansible-ui/pull/3552) |
+| PR | Title | Author | Jira key(s) | Priority | Affects version(s) | Waiting on author | Conflicts | Link |
+| ---: | --- | --- | --- | --- | --- | :---: | :---: | --- |
+| 3911 | fix(awx): show host checkboxes for constructed inventories (AAP-93628) | swatinarvekar | AAP-93628 | — | — | | | [PR](https://github.com/ansible/ansible-ui/pull/3911) |
+| 3908 | fix(platform): enable custom logo file upload (AAP-65130) | swatinarvekar | AAP-65130 | — | — | | | [PR](https://github.com/ansible/ansible-ui/pull/3908) |
+| 3902 | AAP-93673: show error toast when duplicate template fails | pshekhaw | AAP-93673 | — | — | | | [PR](https://github.com/ansible/ansible-ui/pull/3902) |
+| 3881 | test(e2e): restore overview hosts Ready/Failed redirect coverage | lgalis | — | — | — | | | [PR](https://github.com/ansible/ansible-ui/pull/3881) |
+| 3874 | fix: use exact name filter for Hub task management (AAP-99022) | swatinarvekar | AAP-99022 | — | — | | | [PR](https://github.com/ansible/ansible-ui/pull/3874) |
+| 3865 | AAP-101258: feat: support boolean survey answers in UI | chadmf | AAP-101258 | — | — | Yes | Yes | [PR](https://github.com/ansible/ansible-ui/pull/3865) |
+| 3848 | AAP-99868: grow survey textarea for multi-line defaults | shrsingh-eng | AAP-99868 | — | — | Yes | | [PR](https://github.com/ansible/ansible-ui/pull/3848) |
+| 3843 | fix(hub): keep the selected collection when browsing versions (AAP-100265) | snehald1241 | AAP-100265 | — | — | Yes | | [PR](https://github.com/ansible/ansible-ui/pull/3843) |
+| 3840 | AAPRFE-3174: Add dynamic/live search filtering to Organizations page | pshekhaw | AAPRFE-3174 | Normal | 2.6, 2.7 | | | [PR](https://github.com/ansible/ansible-ui/pull/3840) |
+| 3827 | AAP-85721: Warn before deleting job templates in use by workflows | swatinarvekar | AAP-85721, AAP-99473 | — | — | | | [PR](https://github.com/ansible/ansible-ui/pull/3827) |
+| 3770 | fix(awx): allow clearing schedule limit | demonpig | — | — | — | Yes | | [PR](https://github.com/ansible/ansible-ui/pull/3770) |
+| 3767 | chore(deps): fix npm audit findings | sasas-cloud | — | — | — | Yes | Yes | [PR](https://github.com/ansible/ansible-ui/pull/3767) |
+| 3761 | Fix copy-to-clipboard format selection (AAP-66504) | abhishek-paygavhan | AAP-66504 | — | — | Yes | Yes | [PR](https://github.com/ansible/ansible-ui/pull/3761) |
+| 3752 | Update EDA rulebook activation help text for project sync restart | lennysh | — | — | — | Yes | | [PR](https://github.com/ansible/ansible-ui/pull/3752) |
+| 3740 | Add UI for galaxy_update_on_launch project setting | jonnyfiveiq | AAPRFE-409 | Undefined | 2.3, 2.6, 2.7 | Yes | | [PR](https://github.com/ansible/ansible-ui/pull/3740) |
+| 3706 | fix: persist cleared workflow node job/skip tags (AAP-65215) | swatinarvekar | AAP-65215 | — | — | Yes | | [PR](https://github.com/ansible/ansible-ui/pull/3706) |
+| 3702 | docs: add translation contribution guide | demonpig | — | — | — | Yes | | [PR](https://github.com/ansible/ansible-ui/pull/3702) |
+| 3687 | fix: preserve WJT extra_vars numeric precision (AAP-95292) | swatinarvekar | AAP-95292 | — | — | Yes | | [PR](https://github.com/ansible/ansible-ui/pull/3687) |
+| 3686 | fix: project status link missing and inventory source last job status link malformed | siddhipatil01 | — | — | — | Yes | | [PR](https://github.com/ansible/ansible-ui/pull/3686) |
+| 3680 | feat(framework): add language preference setting | demonpig | — | — | — | Yes | | [PR](https://github.com/ansible/ansible-ui/pull/3680) |
+| 3552 | Feature/conditional survey | kenancakir | — | — | — | Yes | Yes | [PR](https://github.com/ansible/ansible-ui/pull/3552) |
 
 ---
 
 ## Regenerating this report
 
-Re-run triage against the [community PR filter](https://github.com/ansible/ansible-ui/pulls?q=is%3Apr+state%3Aopen+label%3Acommunity) and update the snapshot date. With authenticated `gh`:
+Credential env vars are listed in `.cursor/creds.mdc` (`GH_ANSIBLE_UI_TOKEN`, `JIRA_URL`, `JIRA_EMAIL`, `JIRA_API_TOKEN`).
+
+Refresh **Jira linkage** and inventory columns (re-run against live GitHub + Jira):
+
+```bash
+python3 reports/generate-community-pr-triage.py \
+  --output reports/community-pr-triage-$(date +%Y-%m-%d).md
+```
+
+The generator writes the Jira-centric tables; merge into the narrative sections of this doc or extend the script to emit the full triage template.
+
+GitHub-only snapshot:
 
 ```bash
 gh pr list --repo ansible/ansible-ui --label community --state open --limit 100 \
-  --json number,title,author,labels,additions,deletions,changedFiles,url,isDraft,updatedAt
+  --json number,title,author,labels,additions,deletions,changedFiles,url,isDraft,updatedAt,body
 ```
