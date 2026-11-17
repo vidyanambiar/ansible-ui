@@ -160,54 +160,76 @@ def unresolved_jira_label(issue: dict[str, Any]) -> str:
 
 
 def unresolved_jira_note(issue: dict[str, Any]) -> str:
+    browse_url = issue.get("browse_url", "")
     if issue.get("error") == 404:
-        return "Jira API 404 — issue may exist in browser; token needs Browse on that project"
-    return f"Jira API HTTP {issue.get('error', '?')}"
+        return (
+            f"[View in Jira]({browse_url}) — Priority/Affects not returned by API "
+            f"(open in browser or grant token Browse on AAP)"
+        )
+    return f"[View in Jira]({browse_url}) — API HTTP {issue.get('error', '?')}"
 
 
 def format_versions(versions: list[str]) -> str:
     return ", ".join(versions) if versions else "—"
 
 
-def primary_jira_row(keys: list[str], jira: dict[str, dict[str, Any]]) -> tuple[str, str, str, str]:
+def format_jira_key_links(
+    keys: list[str], jira: dict[str, dict[str, Any]], jira_url: str
+) -> str:
+    if not keys:
+        return "—"
+    links: list[str] = []
+    for key in keys:
+        issue = jira.get(key, {})
+        browse_url = issue.get("browse_url") or jira_browse_url(jira_url, key)
+        links.append(f"[{key}]({browse_url})")
+    return ", ".join(links)
+
+
+def issue_row_note(key: str, issue: dict[str, Any], jira_url: str) -> str:
+    if issue.get("found"):
+        summary = (issue.get("summary") or "").replace("|", "\\|")
+        if len(summary) > 72:
+            summary = f"{summary[:69]}..."
+        return f"**{key}:** Status {issue.get('status', '—')} — {summary}"
+    if not issue.get("browse_url"):
+        issue = {
+            **issue,
+            "browse_url": jira_browse_url(jira_url, key),
+        }
+    return f"**{key}:** {unresolved_jira_note(issue)}"
+
+
+def primary_jira_row(
+    keys: list[str], jira: dict[str, dict[str, Any]], jira_url: str
+) -> tuple[str, str, str, str]:
     if not keys:
         return "—", "—", "—", "No Jira key in PR title/body"
 
+    key_col = format_jira_key_links(keys, jira, jira_url)
     priorities: list[str] = []
     version_groups: list[str] = []
-    statuses: list[str] = []
-    missing: list[str] = []
+    note_parts: list[str] = []
 
     for key in keys:
-        issue = jira.get(key, {"found": False})
+        issue = jira.get(key, {"found": False, "key": key})
+        note_parts.append(issue_row_note(key, issue, jira_url))
         if not issue.get("found"):
-            missing.append(key)
             continue
         priority = issue.get("priority") or "—"
         versions = format_versions(issue.get("affects_versions") or [])
         priorities.append(f"{key}: {priority}")
         version_groups.append(f"{key}: {versions}")
-        statuses.append(f"{key}: {issue.get('status', '—')}")
 
-    key_col = ", ".join(keys)
-    if missing and not priorities:
-        return key_col, "—", "—", "; ".join(
-            unresolved_jira_note(jira.get(key, {"error": "?"})) for key in missing
-        )
-
-    note_parts: list[str] = []
-    if missing:
-        note_parts.append(
-            "; ".join(
-                f"{key}: {unresolved_jira_note(jira.get(key, {'error': '?'}))}" for key in missing
-            )
-        )
-    if priorities:
-        note_parts.append("; ".join(statuses))
-    return key_col, "; ".join(priorities) if priorities else "—", "; ".join(version_groups) if version_groups else "—", " | ".join(note_parts)
+    priority_col = "; ".join(priorities) if priorities else "—"
+    version_col = "; ".join(version_groups) if version_groups else "—"
+    notes_col = " · ".join(note_parts)
+    return key_col, priority_col, version_col, notes_col
 
 
-def render_report(snapshot: str, prs: list[dict[str, Any]], jira: dict[str, dict[str, Any]]) -> str:
+def render_report(
+    snapshot: str, prs: list[dict[str, Any]], jira: dict[str, dict[str, Any]], jira_url: str
+) -> str:
     linked = sum(1 for pr in prs if pr["jira_keys"])
     resolved_keys = sum(1 for issue in jira.values() if issue.get("found"))
 
@@ -237,7 +259,7 @@ def render_report(snapshot: str, prs: list[dict[str, Any]], jira: dict[str, dict
     ]
 
     for pr in sorted(prs, key=lambda item: item["number"], reverse=True):
-        keys, priority, versions, notes = primary_jira_row(pr["jira_keys"], jira)
+        keys, priority, versions, notes = primary_jira_row(pr["jira_keys"], jira, jira_url)
         title = pr["title"].replace("|", "\\|")
         lines.append(
             f"| [#{pr['number']}](https://github.com/ansible/ansible-ui/pull/{pr['number']}) "
@@ -263,9 +285,11 @@ def render_report(snapshot: str, prs: list[dict[str, Any]], jira: dict[str, dict
                 f"| {issue.get('summary', '').replace('|', '\\|')} |"
             )
         else:
+            browse = issue.get("browse_url", jira_browse_url(jira_url, key))
+            note = unresolved_jira_note({**issue, "browse_url": browse})
             lines.append(
-                f"| [{key}]({issue.get('browse_url', '')}) | — | — | {unresolved_jira_label(issue)} "
-                f"| {unresolved_jira_note(issue).replace('|', '\\|')} |"
+                f"| [{key}]({browse}) | — | — | {unresolved_jira_label(issue)} "
+                f"| {note} |"
             )
 
     lines.extend(
@@ -275,17 +299,17 @@ def render_report(snapshot: str, prs: list[dict[str, Any]], jira: dict[str, dict
             "",
             "## Full inventory (with Jira)",
             "",
-            "| PR | Title | Author | Jira key(s) | Priority | Affects version(s) | Link |",
-            "| ---: | --- | --- | --- | --- | --- | --- |",
+            "| PR | Title | Author | Jira key(s) | Priority | Affects version(s) | Notes | Link |",
+            "| ---: | --- | --- | --- | --- | --- | --- | --- |",
         ]
     )
 
     for pr in sorted(prs, key=lambda item: item["number"], reverse=True):
-        keys, priority, versions, _ = primary_jira_row(pr["jira_keys"], jira)
+        keys, priority, versions, notes = primary_jira_row(pr["jira_keys"], jira, jira_url)
         title = pr["title"].replace("|", "\\|")
         lines.append(
             f"| {pr['number']} | {title} | {pr['author']} | {keys} | {priority} | {versions} "
-            f"| [PR](https://github.com/ansible/ansible-ui/pull/{pr['number']}) |"
+            f"| {notes} | [PR](https://github.com/ansible/ansible-ui/pull/{pr['number']}) |"
         )
 
     lines.extend(
@@ -356,7 +380,7 @@ def main() -> None:
         time.sleep(0.12)
         jira[key] = fetch_jira_issue(jira_url, headers, key)
 
-    markdown = render_report(args.snapshot, pr_rows, jira)
+    markdown = render_report(args.snapshot, pr_rows, jira, jira_url)
     with open(args.output, "w", encoding="utf-8") as handle:
         handle.write(markdown)
     print(f"Wrote {args.output} ({len(pr_rows)} PRs, {len(all_keys)} Jira keys)")
