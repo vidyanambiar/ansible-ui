@@ -243,7 +243,7 @@ Deliver framework behavior with dedicated framework review per repository policy
 
 ## Regenerating this report
 
-Credential env vars are listed in `.cursor/creds.mdc` (`GH_ANSIBLE_UI_TOKEN`, `JIRA_URL`, `JIRA_EMAIL`, `JIRA_API_TOKEN`).
+Credential env vars are listed in `.cursor/rules/creds.mdc` (`GH_ANSIBLE_UI_TOKEN`, `JIRA_URL`, `JIRA_EMAIL`, `JIRA_API_TOKEN`).
 
 Refresh **Jira linkage** and inventory columns (re-run against live GitHub + Jira):
 

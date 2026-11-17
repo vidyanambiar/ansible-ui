@@ -2,7 +2,7 @@
 """Generate community PR triage markdown with Jira Priority and Affects version.
 
 Requires: GH_ANSIBLE_UI_TOKEN, JIRA_URL, JIRA_EMAIL, JIRA_API_TOKEN
-(see .cursor/creds.mdc)
+(see .cursor/rules/creds.mdc — use REST API, not /browse/)
 
 Usage:
   python3 reports/generate-community-pr-triage.py \
@@ -48,6 +48,55 @@ def jira_headers(email: str, token: str) -> dict[str, str]:
     return {"Accept": "application/json", "Authorization": f"Basic {auth}"}
 
 
+def jira_rest_issue_url(jira_url: str, issue_key: str, fields: str) -> str:
+    base = jira_url.rstrip("/")
+    return f"{base}/rest/api/3/issue/{issue_key}?fields={fields}"
+
+
+def jira_browse_url(jira_url: str, issue_key: str) -> str:
+    return f"{jira_url.rstrip('/')}/browse/{issue_key}"
+
+
+def verify_jira_access(jira_url: str, email: str, token: str) -> None:
+    """Fail fast when the token cannot read a representative AAP defect issue."""
+    headers = jira_headers(email, token)
+    probe_key = "AAP-93628"
+    public_key = "AAPRFE-3174"
+    probe_url = jira_rest_issue_url(jira_url, probe_key, "priority,versions")
+    request = urllib.request.Request(probe_url, headers=headers)
+    try:
+        http_json(request)
+        print(f"Jira: API token can read {probe_key}.", file=sys.stderr)
+        return
+    except urllib.error.HTTPError as error:
+        if error.code != 404:
+            print(
+                f"Jira: probe {probe_key} returned HTTP {error.code}; continuing.",
+                file=sys.stderr,
+            )
+            return
+
+    public_url = jira_rest_issue_url(jira_url, public_key, "summary")
+    public_anonymous = False
+    try:
+        http_json(urllib.request.Request(public_url, headers={"Accept": "application/json"}))
+        public_anonymous = True
+    except urllib.error.HTTPError:
+        pass
+
+    print(
+        f"Jira: cannot read {probe_key} via REST (HTTP 404). "
+        f"Browse URL works in SSO browser: {jira_browse_url(jira_url, probe_key)}",
+        file=sys.stderr,
+    )
+    if public_anonymous:
+        print(
+            "Jira: AAPRFE issues may work without token access; AAP defect issues need "
+            "Browse on project AAP for the API token user. See .cursor/rules/creds.mdc",
+            file=sys.stderr,
+        )
+
+
 def http_json(request: urllib.request.Request) -> Any:
     with urllib.request.urlopen(request, timeout=60) as response:
         return json.load(response)
@@ -74,8 +123,8 @@ def extract_jira_keys(title: str, body: str | None) -> list[str]:
 def fetch_jira_issue(
     jira_url: str, headers: dict[str, str], issue_key: str
 ) -> dict[str, Any]:
-    browse_url = f"{jira_url.rstrip('/')}/browse/{issue_key}"
-    url = f"{jira_url.rstrip('/')}/rest/api/3/issue/{issue_key}?fields=summary,priority,versions,status"
+    browse_url = jira_browse_url(jira_url, issue_key)
+    url = jira_rest_issue_url(jira_url, issue_key, "summary,priority,versions,status")
     request = urllib.request.Request(url, headers=headers)
     try:
         data = http_json(request)
@@ -246,7 +295,7 @@ def render_report(snapshot: str, prs: list[dict[str, Any]], jira: dict[str, dict
             "",
             "## Regenerating this report",
             "",
-            "Set credentials per `.cursor/creds.mdc`, then:",
+            "Set credentials per `.cursor/rules/creds.mdc`, then:",
             "",
             "```bash",
             "python3 reports/generate-community-pr-triage.py \\",
@@ -271,6 +320,11 @@ def main() -> None:
         help="Output markdown path",
     )
     parser.add_argument("--snapshot", default=date.today().isoformat(), help="Snapshot date (YYYY-MM-DD)")
+    parser.add_argument(
+        "--skip-jira-probe",
+        action="store_true",
+        help="Skip startup check for AAP defect REST access",
+    )
     args = parser.parse_args()
 
     gh_token = env("GH_ANSIBLE_UI_TOKEN")
@@ -278,6 +332,8 @@ def main() -> None:
     jira_email = env("JIRA_EMAIL")
     jira_token = env("JIRA_API_TOKEN")
     headers = jira_headers(jira_email, jira_token)
+    if not args.skip_jira_probe:
+        verify_jira_access(jira_url, jira_email, jira_token)
 
     pulls = fetch_community_prs(gh_token)
     pr_rows: list[dict[str, Any]] = []
