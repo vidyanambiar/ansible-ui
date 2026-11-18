@@ -268,11 +268,230 @@ def primary_jira_row(
     return key_col, priority_col, version_col, notes_col
 
 
+def pr_track(jira_keys: list[str]) -> str:
+    return "Jira-linked" if jira_keys else "Community (no Jira in PR)"
+
+
+def format_assignee_column(assignees: list[str]) -> str:
+    if not assignees:
+        return "—"
+    return ", ".join(f"@{login}" for login in assignees)
+
+
+def waiting_on_author(pr: dict[str, Any]) -> str:
+    labels = pr.get("labels") or []
+    return "Yes" if "waiting-on-author" in labels else ""
+
+
+def fetch_pull_review_meta(token: str, number: int) -> dict[str, Any]:
+    url = f"https://api.github.com/repos/ansible/ansible-ui/pulls/{number}"
+    request = urllib.request.Request(url, headers=gh_headers(token))
+    try:
+        data = http_json(request)
+    except urllib.error.HTTPError:
+        return {"mergeable_state": "unknown", "draft": False}
+    return {
+        "mergeable_state": (data.get("mergeable_state") or "unknown").lower(),
+        "draft": bool(data.get("draft")),
+    }
+
+
+def is_ready_for_maintainer_review(pr: dict[str, Any]) -> bool:
+    if pr.get("draft"):
+        return False
+    labels = pr.get("labels") or []
+    if "waiting-on-author" in labels:
+        return False
+    if pr.get("mergeable_state") == "dirty":
+        return False
+    return True
+
+
+def assign_meeting_notes(pr: dict[str, Any]) -> str:
+    labels = pr.get("labels") or []
+    notes: list[str] = []
+    if not any(label.startswith("risk:") for label in labels):
+        notes.append("add `risk:*` before merge if required")
+    return "; ".join(notes) if notes else "—"
+
+
+def is_fast_path_candidate(pr: dict[str, Any], jira: dict[str, dict[str, Any]]) -> bool:
+    """Small/low-risk batch review: ready, below Major Jira priority, risk:low or similar."""
+    if not is_ready_for_maintainer_review(pr):
+        return False
+    rank = best_priority_for_keys(pr["jira_keys"], jira)
+    if rank <= PRIORITY_RANK["Major"]:
+        return False
+    labels = pr.get("labels") or []
+    if "risk:low" in labels:
+        return True
+    if not pr["jira_keys"] and any(label.startswith("e2e:") for label in labels):
+        return True
+    if pr["jira_keys"] and not any(label.startswith("risk:") for label in labels):
+        return True
+    return False
+
+
+def fast_path_flag(pr: dict[str, Any], jira: dict[str, dict[str, Any]]) -> str:
+    return "Yes" if is_fast_path_candidate(pr, jira) else ""
+
+
+def truncate_title(title: str, *, max_len: int = 56) -> str:
+    safe = title.replace("|", "\\|")
+    if len(safe) > max_len:
+        return f"{safe[: max_len - 3]}..."
+    return safe
+
+
+def pr_link(number: int) -> str:
+    return f"[#{number}](https://github.com/ansible/ansible-ui/pull/{number})"
+
+
+def append_community_process(lines: list[str]) -> None:
+    lines.extend(
+        [
+            "## Community triage process",
+            "",
+            "Use this report in a **UI foundation pod** meeting to **assign GitHub assignees** on",
+            "`community` PRs that are **ready for maintainer review**, then track assigned work between",
+            "meetings.",
+            "",
+            "### Jira-linked PRs (issue key in PR title/body)",
+            "",
+            "These are often **customer bug fixes**. In the meeting:",
+            "",
+            "1. A UI foundation pod member becomes the **GitHub assignee** on the PR.",
+            "2. That person **claims the linked Jira issue(s)** and shepherds the work to completion.",
+            "3. **Author communication happens in Jira**, not on the PR thread (more effective for this queue).",
+            "4. The assignee **opens and drives any needed backport PRs** through review and merge.",
+            "",
+            "### PRs without a Jira key in the PR text",
+            "",
+            "1. A UI team member is set as **GitHub assignee** and owns **code review and merge**.",
+            "2. The assignee **opens and drives backport PRs** when applicable.",
+            "",
+            "The tables below are generated from live GitHub **assignee** data.",
+            "",
+            "---",
+            "",
+        ]
+    )
+
+
+def append_assignee_tables(
+    lines: list[str], prs: list[dict[str, Any]], jira: dict[str, dict[str, Any]], jira_url: str
+) -> None:
+    with_assignee = sum(1 for pr in prs if pr.get("assignees"))
+    unassigned = [pr for pr in prs if not pr.get("assignees")]
+    unassigned_ready = [pr for pr in unassigned if is_ready_for_maintainer_review(pr)]
+    assigned = [pr for pr in prs if pr.get("assignees")]
+
+    def sort_for_assignment(item: dict[str, Any]) -> tuple[int, int]:
+        return (best_priority_for_keys(item["jira_keys"], jira), -item["number"])
+
+    def sort_for_follow_up(item: dict[str, Any]) -> tuple[str, int, int]:
+        assignee = (item.get("assignees") or [""])[0]
+        return (assignee, best_priority_for_keys(item["jira_keys"], jira), -item["number"])
+
+    deferred = len(unassigned) - len(unassigned_ready)
+    assigned_fast = [pr for pr in assigned if is_fast_path_candidate(pr, jira)]
+
+    lines.extend(
+        [
+            "## Ready for review — assign in meeting",
+            "",
+            "Pick **GitHub assignees** on PRs that are review-ready. **Fast path** = batch-friendly",
+            "(`risk:low` or small Jira fix, not waiting on author, Jira priority below **Major**).",
+            "Fast-path rows appear here **only while unassigned**; once assigned, batch-review via",
+            "**Assigned — follow-up** (Fast path column).",
+            "",
+            f"### Needs assignee ({len(unassigned_ready)})",
+            "",
+            "| PR | Fast path | Title | Track | Jira | Priority | Notes |",
+            "| ---: | :---: | --- | --- | --- | --- | --- |",
+        ]
+    )
+
+    if not unassigned_ready:
+        lines.append(
+            "| — | | _None at snapshot_ | | | | All review-ready PRs have assignees |"
+        )
+    for pr in sorted(unassigned_ready, key=sort_for_assignment):
+        keys, priority, _versions, _notes = primary_jira_row(pr["jira_keys"], jira, jira_url)
+        if not pr["jira_keys"]:
+            keys = "—"
+            priority = "—"
+        lines.append(
+            f"| {pr_link(pr['number'])} | {fast_path_flag(pr, jira) or '—'} "
+            f"| {truncate_title(pr['title'])} | {pr_track(pr['jira_keys'])} "
+            f"| {keys} | {priority} | {assign_meeting_notes(pr)} |"
+        )
+
+    lines.extend(
+        [
+            "",
+            f"### Fast path — already assigned ({len(assigned_fast)})",
+            "",
+        ]
+    )
+    if not assigned_fast:
+        lines.append("_No fast-path PRs have assignees yet._")
+    else:
+        by_assignee: dict[str, list[int]] = {}
+        for pr in assigned_fast:
+            login = pr["assignees"][0]
+            by_assignee.setdefault(login, []).append(pr["number"])
+        lines.append("| Assignee | PRs (batch review) |")
+        lines.append("| --- | --- |")
+        for login in sorted(by_assignee):
+            numbers = ", ".join(
+                f"[#{n}](https://github.com/ansible/ansible-ui/pull/{n})"
+                for n in sorted(by_assignee[login], reverse=True)
+            )
+            lines.append(f"| @{login} | {numbers} |")
+
+    if deferred:
+        lines.extend(
+            [
+                "",
+                f"_{deferred} other open community PR(s) have no assignee but are **not** review-ready "
+                "(waiting on author and/or merge conflicts) — assign when review-ready._",
+            ]
+        )
+
+    lines.extend(
+        [
+            "",
+            f"## Assigned — follow-up ({len(assigned)} PRs)",
+            "",
+            "GitHub assignee already set — check Jira ownership, author status, backports.",
+            "Use **Fast path** to batch small review-ready PRs under the same assignee.",
+            "",
+            "| PR | Assignee | Fast path | Track | Jira | Priority | Waiting on author |",
+            "| ---: | --- | :---: | --- | --- | --- | :---: |",
+        ]
+    )
+
+    for pr in sorted(assigned, key=sort_for_follow_up):
+        keys, priority, _versions, _notes = primary_jira_row(pr["jira_keys"], jira, jira_url)
+        if not pr["jira_keys"]:
+            keys = "—"
+            priority = "—"
+        lines.append(
+            f"| {pr_link(pr['number'])} | {format_assignee_column(pr['assignees'])} "
+            f"| {fast_path_flag(pr, jira) or '—'} | {pr_track(pr['jira_keys'])} | {keys} | {priority} "
+            f"| {waiting_on_author(pr)} |"
+        )
+
+    lines.extend(["", "---", ""])
+
+
 def render_report(
     snapshot: str, prs: list[dict[str, Any]], jira: dict[str, dict[str, Any]], jira_url: str
 ) -> str:
     linked = sum(1 for pr in prs if pr["jira_keys"])
     resolved_keys = sum(1 for issue in jira.values() if issue.get("found"))
+    with_assignee = sum(1 for pr in prs if pr.get("assignees"))
 
     lines: list[str] = [
         "# Community PR triage report — ansible-ui",
@@ -282,14 +501,21 @@ def render_report(
         f"| **Snapshot date** | {snapshot} |",
         "| **Filter** | [Open PRs with `community` label](https://github.com/ansible/ansible-ui/pulls?q=is%3Apr+state%3Aopen+label%3Acommunity) |",
         f"| **Total open** | {len(prs)} |",
-        "| **GitHub data** | `GH_ANSIBLE_UI_TOKEN` |",
+        "| **GitHub data** | `GH_ANSIBLE_UI_TOKEN` (includes PR **assignees**, labels) |",
         "| **Jira data** | `JIRA_URL` — fields: **Priority**, **Affects version** (`versions`) |",
+        f"| **PRs with GitHub assignee** | {with_assignee}/{len(prs)} |",
+        f"| **Unassigned, ready for review** | {sum(1 for pr in prs if not pr.get('assignees') and is_ready_for_maintainer_review(pr))} |",
         f"| **PRs with Jira key(s)** | {linked}/{len(prs)} |",
         f"| **Jira keys resolved via API** | {resolved_keys}/{len(jira)} unique keys |",
         "",
+    ]
+    append_community_process(lines)
+    append_assignee_tables(lines, prs, jira, jira_url)
+    lines.extend(
+        [
         "Jira keys are parsed from each PR **title and body** (`PROJ-123` pattern). "
-        "Rows are sorted by **highest Jira Priority** on the linked issue(s), then PR number (newest first). "
-        "PRs with multiple keys use `;` in Priority / Affects version (same order as Jira key column).",
+        "The **Jira linkage** section lists only PRs that reference Jira in the PR text; "
+        "PRs with no key in title/body are omitted from the Jira linkage table.",
         "",
         "**API vs browser:** Jira Cloud returns **HTTP 404** when an issue is missing *or* when the API token lacks **Browse** permission. A `AAP-*` key that opens in the browser may still show as 404 in this report until the token can browse the **AAP** defect project (not only **AAPRFE**).",
         "",
@@ -297,39 +523,25 @@ def render_report(
         "",
         "## Jira linkage (Priority & Affects version)",
         "",
+        "PRs that **link Jira in the PR** (issue key in title or body). Sorted by highest linked "
+        "**Priority**, then PR #. Multiple keys per PR use `;` in Priority / Affects version "
+        "(same order as the Jira key column).",
+        "",
         "| PR | Jira key(s) | Priority | Affects version(s) | Notes |",
         "| ---: | --- | --- | --- | --- |",
-    ]
+        ]
+    )
 
     def sort_pr_for_jira(item: dict[str, Any]) -> tuple[int, int]:
         rank = best_priority_for_keys(item["jira_keys"], jira)
         return (rank, -item["number"])
 
-    for pr in sorted(prs, key=sort_pr_for_jira):
+    linked_prs = [pr for pr in prs if pr["jira_keys"]]
+    for pr in sorted(linked_prs, key=sort_pr_for_jira):
         keys, priority, versions, notes = primary_jira_row(pr["jira_keys"], jira, jira_url)
         lines.append(
             f"| [#{pr['number']}](https://github.com/ansible/ansible-ui/pull/{pr['number']}) "
             f"| {keys} | {priority} | {versions} | {notes} |"
-        )
-
-    lines.extend(
-        [
-            "",
-            "---",
-            "",
-            "## Full inventory (with Jira)",
-            "",
-            "| PR | Title | Author | Jira key(s) | Priority | Affects version(s) | Notes | Link |",
-            "| ---: | --- | --- | --- | --- | --- | --- | --- |",
-        ]
-    )
-
-    for pr in sorted(prs, key=lambda item: item["number"], reverse=True):
-        keys, priority, versions, notes = primary_jira_row(pr["jira_keys"], jira, jira_url)
-        title = pr["title"].replace("|", "\\|")
-        lines.append(
-            f"| {pr['number']} | {title} | {pr['author']} | {keys} | {priority} | {versions} "
-            f"| {notes} | [PR](https://github.com/ansible/ansible-ui/pull/{pr['number']}) |"
         )
 
     lines.extend(
@@ -386,14 +598,30 @@ def main() -> None:
     for pull in pulls:
         keys = extract_jira_keys(pull.get("title", ""), pull.get("body"))
         all_keys.update(keys)
+        label_names = [label.get("name", "") for label in pull.get("labels", []) if label.get("name")]
+        assignees = [
+            assignee.get("login", "")
+            for assignee in pull.get("assignees", [])
+            if assignee.get("login")
+        ]
         pr_rows.append(
             {
                 "number": pull["number"],
                 "title": pull.get("title", ""),
                 "author": pull.get("user", {}).get("login", ""),
                 "jira_keys": keys,
+                "assignees": assignees,
+                "labels": label_names,
+                "mergeable_state": "",
+                "draft": False,
             }
         )
+
+    for pr in pr_rows:
+        time.sleep(0.05)
+        meta = fetch_pull_review_meta(gh_token, pr["number"])
+        pr["mergeable_state"] = meta["mergeable_state"]
+        pr["draft"] = meta["draft"]
 
     jira: dict[str, dict[str, Any]] = {}
     for key in sorted(all_keys):
