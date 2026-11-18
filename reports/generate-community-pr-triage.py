@@ -315,37 +315,6 @@ def render_report(
     lines.extend(
         [
             "",
-            "### Jira issues referenced (deduplicated)",
-            "",
-            "| Key | Priority | Affects version(s) | Status | Summary |",
-            "| --- | --- | --- | --- | --- |",
-        ]
-    )
-
-    def sort_issue_key(key: str) -> tuple[int, str]:
-        issue = jira[key]
-        rank = priority_rank(issue.get("priority") if issue.get("found") else None)
-        return (rank, key)
-
-    for key in sorted(jira.keys(), key=sort_issue_key):
-        issue = jira[key]
-        if issue.get("found"):
-            lines.append(
-                f"| [{key}]({issue.get('browse_url', '')}) | {issue.get('priority', '—')} "
-                f"| {format_versions(issue.get('affects_versions') or [])} | {issue.get('status', '—')} "
-                f"| {issue.get('summary', '').replace('|', '\\|')} |"
-            )
-        else:
-            browse = issue.get("browse_url", jira_browse_url(jira_url, key))
-            note = unresolved_jira_note({**issue, "browse_url": browse})
-            lines.append(
-                f"| [{key}]({browse}) | — | — | {unresolved_jira_label(issue)} "
-                f"| {note} |"
-            )
-
-    lines.extend(
-        [
-            "",
             "---",
             "",
             "## Full inventory (with Jira)",

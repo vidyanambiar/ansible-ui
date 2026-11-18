@@ -57,24 +57,6 @@ Keys from PR title/body. Sorted by **Jira Priority** (highest first), then PR #.
 | [#3686](https://github.com/ansible/ansible-ui/pull/3686) | — | — | — | No Jira key in PR title/body |
 | [#3680](https://github.com/ansible/ansible-ui/pull/3680) | — | — | — | No Jira key in PR title/body |
 | [#3552](https://github.com/ansible/ansible-ui/pull/3552) | — | — | — | No Jira key in PR title/body |
-### All linked Jira keys (by priority)
-
-| Jira | Priority | Affects version | Status | Summary |
-| --- | --- | --- | --- | --- |
-| [AAP-100265](https://redhat.atlassian.net/browse/AAP-100265) | Major | 2.6, 2.7 | Backlog | BUG - Private Automation Hub: Browse version selection drops collection path parameters, causing Documentation 404 |
-| [AAP-101258](https://redhat.atlassian.net/browse/AAP-101258) | Normal | — | New | Native Boolean Survey Answer Type |
-| [AAP-65130](https://redhat.atlassian.net/browse/AAP-65130) | Normal | 2.6 | Backlog | Cannot upload custom logo in AAP2.6 |
-| [AAP-65215](https://redhat.atlassian.net/browse/AAP-65215) | Normal | 2.6 | Backlog | Workflow Job Template node tags are multiplied and cannot be cleared when "Prompt on launch" is enabled |
-| [AAP-85721](https://redhat.atlassian.net/browse/AAP-85721) | Normal | 2.6, 2.7 | Backlog | Deleting a resource in use by another resource no longer shows a warning in AAP 2.6/2.7 |
-| [AAP-93628](https://redhat.atlassian.net/browse/AAP-93628) | Normal | 2.6, 2.6.20260701 | Backlog | Host selection checkboxes are missing in constructed inventories (regression from AAP 2.4) |
-| [AAP-93673](https://redhat.atlassian.net/browse/AAP-93673) | Normal | 2.6 | Backlog |  [UI] "Clone Template" button fails silently without user-facing error feedback on permission/RBAC mismatch |
-| [AAP-95292](https://redhat.atlassian.net/browse/AAP-95292) | Normal | 2.6.20261019, 2.7.20261005 | New | Workflow Job Template extra_vars UI truncates long numeric strings (16+ digits), unlike standalone Job Templates |
-| [AAP-99022](https://redhat.atlassian.net/browse/AAP-99022) | Normal | 2.6 | New | Cannot filter the management tasks by "name" under Automation Content |
-| [AAP-99868](https://redhat.atlassian.net/browse/AAP-99868) | Normal | 2.6 | Backlog | Let the textarea size in surveys be adjustable so multi-line answers show fully |
-| [AAPRFE-3174](https://redhat.atlassian.net/browse/AAPRFE-3174) | Normal | 2.6, 2.7 | New | Add dynamic/live search filtering to the Organizations page  |
-| [AAP-66504](https://redhat.atlassian.net/browse/AAP-66504) | Minor | 2.5, 2.6, 2.7 | Backlog | "Copy to clipboard" button has various results |
-| [AAP-99473](https://redhat.atlassian.net/browse/AAP-99473) | Undefined | 2.7 | Closed | Deleting a credential succeeds when the credential is used by a project |
-| [AAPRFE-409](https://redhat.atlassian.net/browse/AAPRFE-409) | Undefined | 2.3, 2.6, 2.7 | Backlog | Allow users to clear the galaxy cache |
 
 ---
 
