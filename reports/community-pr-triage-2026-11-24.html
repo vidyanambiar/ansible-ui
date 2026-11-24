@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Community PR triage — 2026-11-24</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 1.5rem 2rem; line-height: 1.45; max-width: 1100px; }
+    table { border-collapse: collapse; width: 100%; margin: 0.75rem 0 1.25rem; font-size: 0.92rem; }
+    th, td { border: 1px solid #c7c7c7; padding: 0.4rem 0.55rem; text-align: left; vertical-align: top; }
+    th { background: #f5f5f5; }
+    h1, h2, h3 { margin-top: 1.25rem; }
+    code { background: #f0f0f0; padding: 0.1rem 0.25rem; border-radius: 3px; }
+    a { color: #06c; }
+  </style>
+</head>
+<body>
+<h1>Community PR triage report — ansible-ui</h1>
+<table><thead><tr>
+<th>Field</th>
+<th>Value</th>
+</tr></thead><tbody>
+<tr>
+<td><strong>Snapshot date</strong></td>
+<td>2026-11-24</td>
+</tr>
+<tr>
+<td><strong>Filter</strong></td>
+<td><a href="https://github.com/ansible/ansible-ui/pulls?q=is%3Apr+state%3Aopen+label%3Acommunity">Open PRs with <code>community</code> label</a></td>
+</tr>
+<tr>
+<td><strong>Total open</strong></td>
+<td>24</td>
+</tr>
+<tr>
+<td><strong>GitHub data</strong></td>
+<td>GitHub (<code>gh api</code>, authenticated as chai-bot)</td>
+</tr>
+<tr>
+<td><strong>Jira data</strong></td>
+<td>Jira REST (<code>https://redhat.atlassian.net</code>)</td>
+</tr>
+<tr>
+<td><strong>PRs with GitHub assignee</strong></td>
+<td>17/24</td>
+</tr>
+<tr>
+<td><strong>Unassigned, ready for review</strong></td>
+<td>4</td>
+</tr>
+<tr>
+<td><strong>PRs with Jira key(s)</strong></td>
+<td>16/24</td>
+</tr>
+<tr>
+<td><strong>Jira keys resolved via API</strong></td>
+<td>17/17 unique keys</td>
+</tr>
+</tbody></table>
+<h2>Community triage process</h2>
+<p>Use this report in a <strong>UI foundation pod</strong> meeting to <strong>assign GitHub assignees</strong> on</p>
+<p><code>community</code> PRs that are <strong>ready for maintainer review</strong>, then track assigned work between</p>
+<p>meetings.</p>
+<h3>Jira-linked PRs (issue key in PR title/body)</h3>
+<p>These are often <strong>customer bug fixes</strong>. In the meeting:</p>
+<p>1. A UI foundation pod member becomes the <strong>GitHub assignee</strong> on the PR.</p>
+<p>2. That person <strong>claims the linked Jira issue(s)</strong> and shepherds the work to completion.</p>
+<p>3. <strong>Author communication happens in Jira</strong>, not on the PR thread (more effective for this queue).</p>
+<p>4. The assignee <strong>opens and drives any needed backport PRs</strong> through review and merge.</p>
+<h3>PRs without a Jira key in the PR text</h3>
+<p>1. A UI team member is set as <strong>GitHub assignee</strong> and owns <strong>code review and merge</strong>.</p>
+<p>2. The assignee <strong>opens and drives backport PRs</strong> when applicable.</p>
+<p>The tables below are generated from live GitHub <strong>assignee</strong> data.</p>
+<hr>
+<h2>Ready for review — assign in meeting</h2>
+<p>Pick <strong>GitHub assignees</strong> on PRs that are review-ready. <strong>Fast path</strong> = batch-friendly </p>
+<p>(<code>risk:low</code>, review-ready; Jira-linked PRs need resolved priority below <strong>Major</strong>). </p>
+<p>Linked Jira without snapshot/priority is <strong>not</strong> fast path—still track customer work.</p>
+<p>Fast-path rows appear here <strong>only while unassigned</strong>; once assigned, batch-review via</p>
+<p><strong>Assigned — follow-up</strong> (Fast path column).</p>
+<h3>Needs assignee (4)</h3>
+<table><thead><tr>
+<th>PR</th>
+<th>Fast path</th>
+<th>Title</th>
+<th>Track</th>
+<th>Jira</th>
+<th>Priority</th>
+<th>Notes</th>
+</tr></thead><tbody>
+<tr>
+<td><a href="https://github.com/ansible/ansible-ui/pull/3932">#3932</a></td>
+<td>—</td>
+<td>AAP-102151: Include image tag in EE Images podman pul...</td>
+<td>Jira-linked</td>
+<td><a href="https://redhat.atlassian.net/browse/AAP-102151">AAP-102151</a></td>
+<td>Major</td>
+<td>—</td>
+</tr>
+<tr>
+<td><a href="https://github.com/ansible/ansible-ui/pull/3843">#3843</a></td>
+<td>—</td>
+<td>fix(hub): keep the selected collection when browsing ...</td>
+<td>Jira-linked</td>
+<td><a href="https://redhat.atlassian.net/browse/AAP-100265">AAP-100265</a></td>
+<td>Major</td>
+<td>add <code>risk:*</code> before merge if required</td>
+</tr>
+<tr>
+<td><a href="https://github.com/ansible/ansible-ui/pull/3931">#3931</a></td>
+<td>—</td>
+<td>AAP-102729 Fix authenticator type filter reported as ...</td>
+<td>Jira-linked</td>
+<td><a href="https://redhat.atlassian.net/browse/AAP-102729">AAP-102729</a></td>
+<td>Normal</td>
+<td>add <code>risk:*</code> before merge if required</td>
+</tr>
+<tr>
+<td><a href="https://github.com/ansible/ansible-ui/pull/3929">#3929</a></td>
+<td>—</td>
+<td>AAP-102995 Add minHeight prop to DataEditor and PageF...</td>
+<td>Jira-linked</td>
+<td><a href="https://redhat.atlassian.net/browse/AAP-102995">AAP-102995</a></td>
+<td>Undefined</td>
+<td>—</td>
+</tr>
+</tbody></table>
+<h3>Fast path — already assigned (2)</h3>
+<table><thead><tr>
+<th>Assignee</th>
+<th>PRs (batch review)</th>
+</tr></thead><tbody>
+<tr>
+<td>@vidyanambiar</td>
+<td><a href="https://github.com/ansible/ansible-ui/pull/3911">#3911</a>, <a href="https://github.com/ansible/ansible-ui/pull/3908">#3908</a></td>
+</tr>
+</tbody></table>
+<p><em>3 other open community PR(s) have no assignee but are <strong>not</strong> review-ready (waiting on author and/or merge conflicts) — assign when review-ready.</em></p>
+<h2>Assigned — follow-up (17 PRs)</h2>
+<p>GitHub assignee already set — check Jira ownership, author status, backports.</p>
+<p>Use <strong>Fast path</strong> to batch small review-ready PRs under the same assignee.</p>
+<table><thead><tr>
+<th>PR</th>
+<th>Assignee</th>
+<th>Fast path</th>
+<th>Track</th>
+<th>Jira</th>
+<th>Priority</th>
+<th>Waiting on author</th>
+</tr></thead><tbody>
+<tr>
+<td><a href="https://github.com/ansible/ansible-ui/pull/3874">#3874</a></td>
+<td>@acruzgon</td>
+<td>—</td>
+<td>Jira-linked</td>
+<td><a href="https://redhat.atlassian.net/browse/AAP-99022">AAP-99022</a></td>
+<td>Normal</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><a href="https://github.com/ansible/ansible-ui/pull/3840">#3840</a></td>
+<td>@acruzgon</td>
+<td>—</td>
+<td>Jira-linked</td>
+<td><a href="https://redhat.atlassian.net/browse/AAPRFE-3174">AAPRFE-3174</a></td>
+<td>Normal</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><a href="https://github.com/ansible/ansible-ui/pull/3827">#3827</a></td>
+<td>@acruzgon</td>
+<td>—</td>
+<td>Jira-linked</td>
+<td><a href="https://redhat.atlassian.net/browse/AAP-85721">AAP-85721</a>, <a href="https://redhat.atlassian.net/browse/AAP-99473">AAP-99473</a></td>
+<td>Normal; Undefined</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><a href="https://github.com/ansible/ansible-ui/pull/3706">#3706</a></td>
+<td>@acruzgon</td>
+<td>—</td>
+<td>Jira-linked</td>
+<td><a href="https://redhat.atlassian.net/browse/AAP-65215">AAP-65215</a></td>
+<td>Normal</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><a href="https://github.com/ansible/ansible-ui/pull/3761">#3761</a></td>
+<td>@acruzgon</td>
+<td>—</td>
+<td>Jira-linked</td>
+<td><a href="https://redhat.atlassian.net/browse/AAP-66504">AAP-66504</a></td>
+<td>Minor</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><a href="https://github.com/ansible/ansible-ui/pull/3740">#3740</a></td>
+<td>@acruzgon</td>
+<td>—</td>
+<td>Jira-linked</td>
+<td><a href="https://redhat.atlassian.net/browse/AAPRFE-409">AAPRFE-409</a></td>
+<td>Undefined</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><a href="https://github.com/ansible/ansible-ui/pull/3767">#3767</a></td>
+<td>@acruzgon</td>
+<td>—</td>
+<td>Community (no Jira in PR)</td>
+<td>—</td>
+<td>—</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><a href="https://github.com/ansible/ansible-ui/pull/3752">#3752</a></td>
+<td>@acruzgon</td>
+<td>—</td>
+<td>Community (no Jira in PR)</td>
+<td>—</td>
+<td>—</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><a href="https://github.com/ansible/ansible-ui/pull/3687">#3687</a></td>
+<td>@lgalis</td>
+<td>—</td>
+<td>Jira-linked</td>
+<td><a href="https://redhat.atlassian.net/browse/AAP-95292">AAP-95292</a></td>
+<td>Normal</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><a href="https://github.com/ansible/ansible-ui/pull/3770">#3770</a></td>
+<td>@lgalis</td>
+<td>—</td>
+<td>Community (no Jira in PR)</td>
+<td>—</td>
+<td>—</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><a href="https://github.com/ansible/ansible-ui/pull/3702">#3702</a></td>
+<td>@lgalis</td>
+<td>—</td>
+<td>Community (no Jira in PR)</td>
+<td>—</td>
+<td>—</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><a href="https://github.com/ansible/ansible-ui/pull/3686">#3686</a></td>
+<td>@lgalis</td>
+<td>—</td>
+<td>Community (no Jira in PR)</td>
+<td>—</td>
+<td>—</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><a href="https://github.com/ansible/ansible-ui/pull/3680">#3680</a></td>
+<td>@lgalis</td>
+<td>—</td>
+<td>Community (no Jira in PR)</td>
+<td>—</td>
+<td>—</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><a href="https://github.com/ansible/ansible-ui/pull/3552">#3552</a></td>
+<td>@lgalis</td>
+<td>—</td>
+<td>Community (no Jira in PR)</td>
+<td>—</td>
+<td>—</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><a href="https://github.com/ansible/ansible-ui/pull/3911">#3911</a></td>
+<td>@vidyanambiar</td>
+<td>Yes</td>
+<td>Jira-linked</td>
+<td><a href="https://redhat.atlassian.net/browse/AAP-93628">AAP-93628</a></td>
+<td>Normal</td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://github.com/ansible/ansible-ui/pull/3908">#3908</a></td>
+<td>@vidyanambiar</td>
+<td>Yes</td>
+<td>Jira-linked</td>
+<td><a href="https://redhat.atlassian.net/browse/AAP-65130">AAP-65130</a></td>
+<td>Normal</td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://github.com/ansible/ansible-ui/pull/3902">#3902</a></td>
+<td>@vidyanambiar</td>
+<td>—</td>
+<td>Jira-linked</td>
+<td><a href="https://redhat.atlassian.net/browse/AAP-93673">AAP-93673</a></td>
+<td>Normal</td>
+<td></td>
+</tr>
+</tbody></table>
+<hr>
+<p>Jira keys are parsed from each PR <strong>title and body</strong> (<code>PROJ-123</code> pattern). The <strong>Jira linkage</strong> section lists only PRs that reference Jira in the PR text; PRs with no key in title/body are omitted from the Jira linkage table.</p>
+<p><strong>API vs browser:</strong> Jira Cloud returns <strong>HTTP 404</strong> when an issue is missing *or* when the API token lacks <strong>Browse</strong> permission. A <code>AAP-*</code> key that opens in the browser may still show as 404 in this report until the token can browse the <strong>AAP</strong> defect project (not only <strong>AAPRFE</strong>).</p>
+<hr>
+<h2>Jira linkage (Priority &amp; Affects version)</h2>
+<p>PRs that <strong>link Jira in the PR</strong> (issue key in title or body). Sorted by highest linked <strong>Priority</strong>, then PR #. Multiple keys per PR use <code>;</code> in Priority / Affects version (same order as the Jira key column).</p>
+<table><thead><tr>
+<th>PR</th>
+<th>Jira key(s)</th>
+<th>Priority</th>
+<th>Affects version(s)</th>
+<th>Notes</th>
+</tr></thead><tbody>
+<tr>
+<td><a href="https://github.com/ansible/ansible-ui/pull/3932">#3932</a></td>
+<td><a href="https://redhat.atlassian.net/browse/AAP-102151">AAP-102151</a></td>
+<td>Major</td>
+<td>2.7</td>
+<td>Status Backlog — [UI] EE Images tab podman pull copy omits image tag in AAP 2.7 (regre...</td>
+</tr>
+<tr>
+<td><a href="https://github.com/ansible/ansible-ui/pull/3843">#3843</a></td>
+<td><a href="https://redhat.atlassian.net/browse/AAP-100265">AAP-100265</a></td>
+<td>Major</td>
+<td>2.6, 2.7</td>
+<td>Status Backlog — BUG - Private Automation Hub: Browse version selection drops collecti...</td>
+</tr>
+<tr>
+<td><a href="https://github.com/ansible/ansible-ui/pull/3931">#3931</a></td>
+<td><a href="https://redhat.atlassian.net/browse/AAP-102729">AAP-102729</a></td>
+<td>Normal</td>
+<td>2.6, 2.7</td>
+<td>Status Backlog — BUG - AAP UI authenticator type filter returns no results for existin...</td>
+</tr>
+<tr>
+<td><a href="https://github.com/ansible/ansible-ui/pull/3911">#3911</a></td>
+<td><a href="https://redhat.atlassian.net/browse/AAP-93628">AAP-93628</a></td>
+<td>Normal</td>
+<td>2.6, 2.6.20260701</td>
+<td>Status In Progress — Host selection checkboxes are missing in constructed inventories (reg...</td>
+</tr>
+<tr>
+<td><a href="https://github.com/ansible/ansible-ui/pull/3908">#3908</a></td>
+<td><a href="https://redhat.atlassian.net/browse/AAP-65130">AAP-65130</a></td>
+<td>Normal</td>
+<td>2.6</td>
+<td>Status In Progress — Cannot upload custom logo in AAP2.6</td>
+</tr>
+<tr>
+<td><a href="https://github.com/ansible/ansible-ui/pull/3902">#3902</a></td>
+<td><a href="https://redhat.atlassian.net/browse/AAP-93673">AAP-93673</a></td>
+<td>Normal</td>
+<td>2.6</td>
+<td>Status In Progress —  [UI] &quot;Clone Template&quot; button fails silently without user-facing erro...</td>
+</tr>
+<tr>
+<td><a href="https://github.com/ansible/ansible-ui/pull/3874">#3874</a></td>
+<td><a href="https://redhat.atlassian.net/browse/AAP-99022">AAP-99022</a></td>
+<td>Normal</td>
+<td>2.6</td>
+<td>Status New — Cannot filter the management tasks by &quot;name&quot; under Automation Content</td>
+</tr>
+<tr>
+<td><a href="https://github.com/ansible/ansible-ui/pull/3865">#3865</a></td>
+<td><a href="https://redhat.atlassian.net/browse/AAP-101258">AAP-101258</a></td>
+<td>Normal</td>
+<td>—</td>
+<td>Status New — Native Boolean Survey Answer Type</td>
+</tr>
+<tr>
+<td><a href="https://github.com/ansible/ansible-ui/pull/3848">#3848</a></td>
+<td><a href="https://redhat.atlassian.net/browse/AAP-99868">AAP-99868</a></td>
+<td>Normal</td>
+<td>2.6</td>
+<td>Status Backlog — Let the textarea size in surveys be adjustable so multi-line answers ...</td>
+</tr>
+<tr>
+<td><a href="https://github.com/ansible/ansible-ui/pull/3840">#3840</a></td>
+<td><a href="https://redhat.atlassian.net/browse/AAPRFE-3174">AAPRFE-3174</a></td>
+<td>Normal</td>
+<td>2.6, 2.7</td>
+<td>Status New — Add dynamic/live search filtering to the Organizations page</td>
+</tr>
+<tr>
+<td><a href="https://github.com/ansible/ansible-ui/pull/3827">#3827</a></td>
+<td><a href="https://redhat.atlassian.net/browse/AAP-85721">AAP-85721</a>, <a href="https://redhat.atlassian.net/browse/AAP-99473">AAP-99473</a></td>
+<td>Normal; Undefined</td>
+<td>2.6, 2.7; 2.7</td>
+<td><strong>AAP-85721:</strong> Status Backlog — Deleting a resource in use by another resource no longer shows a warn... · <strong>AAP-99473:</strong> Status Closed — Deleting a credential succeeds when the credential is used by a project</td>
+</tr>
+<tr>
+<td><a href="https://github.com/ansible/ansible-ui/pull/3706">#3706</a></td>
+<td><a href="https://redhat.atlassian.net/browse/AAP-65215">AAP-65215</a></td>
+<td>Normal</td>
+<td>2.6</td>
+<td>Status Backlog — Workflow Job Template node tags are multiplied and cannot be cleared ...</td>
+</tr>
+<tr>
+<td><a href="https://github.com/ansible/ansible-ui/pull/3687">#3687</a></td>
+<td><a href="https://redhat.atlassian.net/browse/AAP-95292">AAP-95292</a></td>
+<td>Normal</td>
+<td>2.6.20261019, 2.7.20261005</td>
+<td>Status New — Workflow Job Template extra_vars UI truncates long numeric strings (1...</td>
+</tr>
+<tr>
+<td><a href="https://github.com/ansible/ansible-ui/pull/3761">#3761</a></td>
+<td><a href="https://redhat.atlassian.net/browse/AAP-66504">AAP-66504</a></td>
+<td>Minor</td>
+<td>2.5, 2.6, 2.7</td>
+<td>Status Backlog — &quot;Copy to clipboard&quot; button has various results</td>
+</tr>
+<tr>
+<td><a href="https://github.com/ansible/ansible-ui/pull/3929">#3929</a></td>
+<td><a href="https://redhat.atlassian.net/browse/AAP-102995">AAP-102995</a></td>
+<td>Undefined</td>
+<td>—</td>
+<td>Status New — [UI] Framework: add minHeight prop to DataEditor and PageFormDataEditor</td>
+</tr>
+<tr>
+<td><a href="https://github.com/ansible/ansible-ui/pull/3740">#3740</a></td>
+<td><a href="https://redhat.atlassian.net/browse/AAPRFE-409">AAPRFE-409</a></td>
+<td>Undefined</td>
+<td>2.3, 2.6, 2.7</td>
+<td>Status Backlog — Allow users to clear the galaxy cache</td>
+</tr>
+</tbody></table>
+<hr>
+<h2>Regenerating this report</h2>
+<p>Chai-bot: see <code>community-pr-triage/references/chai-bot.md</code>. Local dev may use <code>--github-via token</code> and <code>--jira-via env</code> (optional).</p>
+</body>
+</html>
